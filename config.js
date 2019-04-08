@@ -1,4 +1,5 @@
 module.exports = {
+	app_port: 8080,
 	session_secret: 'ImBatman!',
 	token_secret: 'NoJoker',
 	

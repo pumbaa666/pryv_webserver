@@ -12,8 +12,8 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
  */
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
-const mongoDbUrl = 'mongodb://'+config.db_url+':'+config.db_port;//'mongodb://localhost:27017';
-const dbName = config.db_name;//'PryvDB';
+const mongoDbUrl = 'mongodb://'+config.db_url+':'+config.db_port;
+const dbName = config.db_name;
 
 /*
  * JWT
@@ -30,7 +30,9 @@ const uuidv4 = require('uuid/v4'); // Generate UUID. v4 means Random
 
 var app = express();
 app.use(express.static('scripts')); // Serves static files. Used in ./views/*.ejs files to include ./scripts/*.js
-app.use(session({secret: config.session_secret}));
+app.use(session({secret: config.session_secret,
+		 resave: false,
+		 saveUninitialized: false}));
 
 /*
  * Intercept every query, put the session token (if any)
@@ -39,6 +41,7 @@ app.use(session({secret: config.session_secret}));
 app.use(function (req, res, next) {
 	if(!req.headers.authorization)
 		req.headers.authorization = {};
+//	console.log('middleware. token = '+JSON.stringify(req.session.token));
 	req.headers.authorization.token = req.session.token;
 	next();
 });
@@ -80,19 +83,24 @@ function hash(string) {
  * No authentication required.
  */
 app.post('/users',  urlencodedParser, function(req, res) {
-	var js_user = JSON.parse(req.body.js_user);
-	if(!js_user || !js_user.username || !js_user.password) {
-		res.setHeader('Content-Type', 'text/html');
+//	console.log('POST user');
+//	console.log('js_user : '+req.body.js_user);
+	var user = JSON.parse(req.body.js_user);
+	if(!user || !user.username || !user.password) {
+		res.setHeader('Content-Type', 'text/plain');
 		res.status(400).send('Missing username/password');
 		return;
 	}
-	js_user.password = hash(js_user.password);
+	user.password = hash(user.password);
+
+	if(user._id)
+		user._id = ObjectId(user._id);
 
 	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
 		if(err) throw err;
 		const db = client.db(dbName);
 		const col = db.collection('Users');
-		col.insertOne(js_user, function(err, r) {
+		col.insertOne(user, function(err, r) {
 			res.writeHead(302, {'Location': '/'});
 			res.end();
 			client.close();
@@ -131,6 +139,7 @@ app.get('/user/delete/:id', function(req, res) {
  * In case of success : stores a authentication token in the session.
  */
 app.post('/auth/login', urlencodedParser, function(req, res) {
+//	console.log('login');
 	if(!req.body.username || !req.body.password) {
 		res.status(400).send('Missing username/password');
 		return;
@@ -146,6 +155,7 @@ app.post('/auth/login', urlencodedParser, function(req, res) {
 			if(user) { // Matching credentials : put token from jwt in the session and redirect user to index
 				var token = jwt.sign({username: username}, config.token_secret, { expiresIn: '48h'});
 				req.session.token = token;
+//				console.log('token set : '+JSON.stringify(req.session.token));
 				req.session.username = username;
 
 				res.writeHead(302, {'Location': '/'});
@@ -156,7 +166,7 @@ app.post('/auth/login', urlencodedParser, function(req, res) {
 			// Bad credentials : destroy session
 			req.session.destroy();
 			res.setHeader('Content-Type', 'text/html');
-			res.status(200).send('Bad credentials !');
+			res.status(400).send('Bad credentials !');
 			return;
 		});
 	});
@@ -331,4 +341,6 @@ app.use(function(req, res, next){
 		res.status(404).send('Page introuvable !');
 });
 
-app.listen(8080);
+app.listen(config.app_port);
+console.log('Listening on port '+config.app_port);
+module.exports = app; // for testing
