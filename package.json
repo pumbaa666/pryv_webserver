@@ -9,7 +9,15 @@
 		"sha": "~3.0.0",
 		"uuid": "~3.3.2",
 		"jsonwebtoken": "~8.5.1",
-		"express-session": "~1.15.6"
+		"express-session": "~1.15.6",
+		"mocha": "6.1.1",
+		"chai": "~4.2.0",
+		"chai-http": "~4.2.1",
+		"supertest": "~4.0.2",
+		"superagent": "~5.0.2"
+	},
+	"scripts": {
+		"test": "mocha --timeout 10000"
 	},
 	"author": "Loic Correvon <loic.correvon@gmail.com>",
 	"description": "This coding exercise requires you to implement an HTTP API web service."
