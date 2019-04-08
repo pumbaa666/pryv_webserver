@@ -26,6 +26,17 @@ alernatively you can see a working version on http://www.pumbaa.ch:8080/
 (or modify app_port in config.js to your needs)
 
 /*------------------------*\
+|*         USING          *|
+\*------------------------*/
+Start by creating a new user, providing a username and a password
+Then login using the same credentials.
+Once logged, navigate to the resources page.
+Create a resource. You have to provide at least one field.
+Edit the resource by changing the field provided before.
+Then delete the resource by clicking the "✘".
+Finally you can logout.
+
+/*------------------------*\
 |*        TESTING         *|
 \*------------------------*/
 Close any app running on port 8080 (or modify app_port in config.js to your needs) and
