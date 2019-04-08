@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Web-server Loic Correvon</title>
+</head>
+<body>
+	<script src = "/jsonify.js"></script>
+	<h1>Pryv Web-server by Loic Correvon</h1>
+	<h2>Users</h2>
+	<ul>
+		<% users.forEach(function(user, index) { %>
+			<li><a href="/user/delete/<%= user._id %>">✘</a> <%= user.username %></li>
+		<% }); %>
+	</ul>
+
+	<form id = 'form_create' action = '/users' method = 'post'>
+		Create new user : 
+		<input type = 'text' name = 'username' placeholder =  'username' />
+		<input type = 'password' name = 'password' placeholder = 'password' />
+		<input type = 'hidden' name = 'js_user' value = '' />
+		<input type = 'submit' name = 'submit' value = 'submit' onclick='jsonify("form_create")'/>
+	</form>
+	<br />
+
+	<h2>Login</h2>
+	<% if(logged) {%>
+		<a href = '/auth/logout'>logout</a>
+		<h2>Resources</h2>
+		<a href = '/resources'>Show resources</a>
+	<% } else { %>
+		<form id = 'form_login' action = '/auth/login' method = 'post'>
+			Login : 
+			<input type = 'text' name = 'username' placeholder =  'username' />
+			<input type = 'password' name = 'password' placeholder = 'password' />
+			<input type = 'hidden' name = 'js_user' value = '' />
+			<input type = 'submit' name = 'submit' value = 'submit' onclick='jsonify("form_login")'/>
+		</form>
+	<% } %>
+	<br />
+</body>
+</html>

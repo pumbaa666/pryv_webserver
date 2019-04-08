@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Web-server Loic Correvon</title>
+	<script src = "/jsonify.js"></script>
+</head>
+<body>
+	<h1>Pryv Web-server by Loic Correvon</h1>
+	<a href = '/auth/logout'>logout</a>
+
+	<h2>Resources</h2>
+	<ul>
+		<% resources.forEach(function(resource, index) { %>
+			<li>
+				<% if(resource.deleted) {%>
+					<%= resource.id %>
+					(deleted on <%= new Date(resource.deleted).toDateString() %> at <%= new Date(resource.deleted).toTimeString() %>)
+				<% } else { %>
+					<a href='/resource/delete/<%= resource._id %>'>✘</a> <%= resource.id %>
+					<% if(resource.created != resource.modified) { %>
+					(last modified : <%= new Date(resource.modified).toDateString() %> at <%= new Date(resource.modified).toTimeString() %>)
+					<% } else {%>
+					(created : <%= new Date(resource.created).toDateString() %> at <%= new Date(resource.created).toTimeString() %>)
+					<% } %>
+					:
+					<form id = 'form_resource_edit_<%= resource._id %>' action = '/resource/edit/<%= resource._id %>' method = 'post'>
+						<% resource.data.forEach(function(dat, index) { %>
+						<input type = 'text' name = 'data#<%= i %>' value = '<%= dat %>' size = '4' maxlength = '512'/>
+						<% }); %>
+						<input type = 'hidden' name = 'js_resource_<%= resource._id %>' value = '' />
+						<input type = 'submit' value = 'edit' onclick='jsonify("form_resource_edit_<%= resource._id %>")' />
+					</form>
+					<br/>
+				<% } %>
+			</li>
+		<% }); %>
+	</ul>
+
+	<form id = 'form_resource' action = '/resource' method = 'post'>
+		Nouvelle resource :
+		<input type = 'text' name = 'id' placeholder = 'id' />
+
+		<%for(var i = 0 ; i < 10 ; i++) {%>
+			<input type = 'text' name = 'data#<%= i %>' placeholder = 'field <%= (i+1) %>' size = '4' maxlength = '512'/>
+		<%}%>
+
+		<input type = 'hidden' name = 'js_resource' value = '' />
+		<input type = 'submit' name = 'submit' value = 'submit' onclick='jsonify("form_resource")'/>
+	</form>
+</body>
+</html>

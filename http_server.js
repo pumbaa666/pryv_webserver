@@ -1,0 +1,334 @@
+const config = require('./config');
+
+/*
+ * Web
+ */
+const express = require('express');
+const bodyParser = require('body-parser'); // Handle parameters in POST 
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+/*
+ * Database
+ */
+const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
+const mongoDbUrl = 'mongodb://'+config.db_url+':'+config.db_port;//'mongodb://localhost:27017';
+const dbName = config.db_name;//'PryvDB';
+
+/*
+ * JWT
+ */
+const jwt = require('jsonwebtoken');
+const middleware = require('./middleware');
+
+/*
+ * Divers
+ */
+const crypto = require('crypto');
+const session = require('express-session');
+const uuidv4 = require('uuid/v4'); // Generate UUID. v4 means Random
+
+var app = express();
+app.use(express.static('scripts')); // Serves static files. Used in ./views/*.ejs files to include ./scripts/*.js
+app.use(session({secret: config.session_secret}));
+
+/*
+ * Intercept every query, put the session token (if any)
+ * in the request header and send the query to the next handler
+ */
+app.use(function (req, res, next) {
+	if(!req.headers.authorization)
+		req.headers.authorization = {};
+	req.headers.authorization.token = req.session.token;
+	next();
+});
+
+function isUserAutenthicated(req) {
+	return req.headers.authorization.token.success;
+}
+
+/*
+ * Index
+ * Show all users from DB.
+ * Allow to create new users for free !
+ * No authentication required.
+ */
+app.get('/', middleware.checkToken, function(req, res){
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const users_col = db.collection('Users');
+		users_col.find({}).toArray(function(err, users) {
+			res.setHeader('Content-Type', 'text/html');
+			res.render('index.ejs', {users:users, logged: isUserAutenthicated(req)});
+		});
+		client.close();
+		return;
+	});
+});
+
+/*
+ * Hash a string using sha256
+ */
+function hash(string) {
+	return crypto.createHash('sha256').update(string, 'utf8').digest(); 
+}
+
+/*
+ * Create user if username and password are set in the body.
+ * The payload is JSON.
+ * No authentication required.
+ */
+app.post('/users',  urlencodedParser, function(req, res) {
+	var js_user = JSON.parse(req.body.js_user);
+	if(!js_user || !js_user.username || !js_user.password) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('Missing username/password');
+		return;
+	}
+	js_user.password = hash(js_user.password);
+
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const col = db.collection('Users');
+		col.insertOne(js_user, function(err, r) {
+			res.writeHead(302, {'Location': '/'});
+			res.end();
+			client.close();
+			return;
+		});
+	});
+});
+
+/*
+ * Delete user given the id.
+ * No authentication required.
+ */
+app.get('/user/delete/:id', function(req, res) {
+	if(!req.params.id) {
+		res.writeHead(302, {'Location': '/'});
+		res.end();
+		return;
+	}
+
+	var id = req.params.id;
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const col = db.collection('Users');
+		col.findOneAndDelete({_id: ObjectId(id)}, function(err, r) { // TODO find secure way to create ObjectId
+			client.close();
+			res.writeHead(302, {'Location': '/'});
+			res.end();
+			return;
+		});
+	});
+});
+
+/*
+ * Log the user if he provides a username and a password in a json object.
+ * In case of success : stores a authentication token in the session.
+ */
+app.post('/auth/login', urlencodedParser, function(req, res) {
+	if(!req.body.username || !req.body.password) {
+		res.status(400).send('Missing username/password');
+		return;
+	}
+	var username = req.body.username;
+	var password = hash(req.body.password);
+
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+			if(err) throw err;
+			const db = client.db(dbName);
+			const col = db.collection('Users');
+			col.findOne({username: username, password: password}, function(err, user) {
+			if(user) { // Matching credentials : put token from jwt in the session and redirect user to index
+				var token = jwt.sign({username: username}, config.token_secret, { expiresIn: '48h'});
+				req.session.token = token;
+				req.session.username = username;
+
+				res.writeHead(302, {'Location': '/'});
+				res.end();
+				return;
+			}
+
+			// Bad credentials : destroy session
+			req.session.destroy();
+			res.setHeader('Content-Type', 'text/html');
+			res.status(200).send('Bad credentials !');
+			return;
+		});
+	});
+});
+
+/*
+ * Logout and return to index
+ */
+app.get('/auth/logout', function(req, res) {
+	req.session.destroy();
+	res.writeHead(302, {'Location': '/'});
+	res.end();
+});
+
+/*
+ * Show all resources and let user to create new ones.
+ * Authentication required.
+ */
+app.get('/resources', middleware.checkToken, function(req, res) {
+	if(!isUserAutenthicated(req)) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(401).send('You should be connected to do this operation');
+		return;
+	}
+
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const resources_col = db.collection('Resources');
+		resources_col.find({}).toArray(function(err, resources) {
+			res.setHeader('Content-Type', 'text/html');
+			res.render('resources.ejs', {resources:resources, logged: isUserAutenthicated(req)});
+		});
+		client.close();
+	});
+});
+
+/*
+ * Add a new resource.
+ * Authentication required.
+ */
+app.post('/resource', middleware.checkToken, urlencodedParser, function(req, res) {
+	if(!isUserAutenthicated(req)) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(401).send('You should be connected to do this operation');
+		return;
+	}
+
+	if (!req.body.js_resource) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('Missing resource');
+		return;
+	}
+
+	var resource = JSON.parse(req.body.js_resource);
+	if(!resource.id)
+		resource.id = uuidv4();
+
+	if(!resource.data){
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('One field required');
+		return;
+	}
+
+	var data = resource.data;
+	if(data.length <= 0) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('Il faut au moins un champ');
+		return;
+	}
+
+	// Limit data size to 512 char maximum
+	for(var i = 0; i < data.length; i++)
+		data[i] = data[i].substring(0, 512);
+
+	resource.created = new Date().getTime();
+	resource.modified = resource.created;
+
+	// Insert into DB
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const col = db.collection('Resources');
+		col.insertOne(resource, function(err, r) {
+			res.writeHead(302, {'Location': '/resources'});
+			res.end();
+			client.close();
+			return;
+		});
+	});
+});
+
+/*
+ * Edit data of a resource, providing its id.
+ * Authentication required.
+ */
+app.post('/resource/edit/:id', middleware.checkToken, urlencodedParser, function(req, res) {
+	if(!isUserAutenthicated(req)) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(401).send('You should be connected to do this operation');
+		return;
+	}
+
+	if(!req.params.id) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('Missing resource id');
+		return;
+	}
+
+	var id = req.params.id;
+	if(!req.body['js_resource_'+id]) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('Missing data');
+		return;
+	}
+
+	var js_resource = req.body['js_resource_'+id];
+	var resource = JSON.parse(js_resource);
+	var data = resource.data;
+
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const col = db.collection('Resources');
+		var currentTime = new Date().getTime();
+		col.findOneAndUpdate({_id: ObjectId(id)}, {$set: {data: data, modified: currentTime}}, function(err, r) {
+			res.writeHead(302, {'Location': '/resources'});
+			res.end();
+			client.close();
+			return;
+		});
+	});
+});
+
+/*
+ * Delete a resource, given its id
+ * Authentication required.
+ */
+app.get('/resource/delete/:id', middleware.checkToken, function(req, res) {
+	if(!isUserAutenthicated(req)) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(401).send('You should be connected to do this operation');
+		return;
+	}
+
+	if(!req.params.id) {
+		res.setHeader('Content-Type', 'text/html');
+		res.status(400).send('Missing resource id');
+		return;
+	}
+
+	var id = req.params.id;
+	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
+		if(err) throw err;
+		const db = client.db(dbName);
+		const col = db.collection('Resources');
+		var currentTime = new Date().getTime();
+		col.findOneAndUpdate({_id: ObjectId(id), deleted:undefined}, {$set: {data: [], modified: currentTime, deleted: currentTime}}, function(err, r) {
+			res.writeHead(302, {'Location': '/resources'});
+			res.end();
+			client.close();
+			return;
+		});
+	});
+});
+
+/*
+ * Page 404
+ */
+app.use(function(req, res, next){
+		res.setHeader('Content-Type', 'text/plain');
+		res.status(404).send('Page introuvable !');
+});
+
+app.listen(8080);

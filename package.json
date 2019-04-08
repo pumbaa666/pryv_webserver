@@ -1,0 +1,16 @@
+{
+	"name": "pryv-http-lcorrevon",
+	"version": "0.1.0",
+	"dependencies": {
+		"body-parser": "~1.18.3",
+		"ejs": "~2.6.1",
+		"express": "~4.16.4",
+		"mongodb": "~3.2.3",
+		"sha": "~3.0.0",
+		"uuid": "~3.3.2",
+		"jsonwebtoken": "~8.5.1",
+		"express-session": "~1.15.6"
+	},
+	"author": "Loic Correvon <loic.correvon@gmail.com>",
+	"description": "This coding exercise requires you to implement an HTTP API web service."
+}
