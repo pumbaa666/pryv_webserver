@@ -1,17 +1,17 @@
 /*------------------------*\
-|*     Prerequisites      *|
+|*     PREREQUISITES      *|
 \*------------------------*/
 A MongoDB database installed locally
 and runing on port 27017
 (or modify db_url and db_port in config.js to your needs)
 
 /*------------------------*\
-|*        Download        *|
+|*        DOWNLOAD        *|
 \*------------------------*/
 $git clone https://github.com/pumbaa666/pryv_webserver.git
 
 /*------------------------*\
-|* Installation & running *|
+|* INSTALLATION & RUNNING *|
 \*------------------------*/
 Close any app running on port 8080 (or modify app_port in config.js to your needs) and
 $cd pryv_webserver
