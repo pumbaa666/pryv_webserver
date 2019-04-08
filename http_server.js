@@ -41,7 +41,6 @@ app.use(session({secret: config.session_secret,
 app.use(function (req, res, next) {
 	if(!req.headers.authorization)
 		req.headers.authorization = {};
-//	console.log('middleware. token = '+JSON.stringify(req.session.token));
 	req.headers.authorization.token = req.session.token;
 	next();
 });
@@ -83,8 +82,6 @@ function hash(string) {
  * No authentication required.
  */
 app.post('/users',  urlencodedParser, function(req, res) {
-//	console.log('POST user');
-//	console.log('js_user : '+req.body.js_user);
 	var user = JSON.parse(req.body.js_user);
 	if(!user || !user.username || !user.password) {
 		res.setHeader('Content-Type', 'text/plain');
@@ -139,7 +136,6 @@ app.get('/user/delete/:id', function(req, res) {
  * In case of success : stores a authentication token in the session.
  */
 app.post('/auth/login', urlencodedParser, function(req, res) {
-//	console.log('login');
 	if(!req.body.username || !req.body.password) {
 		res.status(400).send('Missing username/password');
 		return;
@@ -155,7 +151,6 @@ app.post('/auth/login', urlencodedParser, function(req, res) {
 			if(user) { // Matching credentials : put token from jwt in the session and redirect user to index
 				var token = jwt.sign({username: username}, config.token_secret, { expiresIn: '48h'});
 				req.session.token = token;
-//				console.log('token set : '+JSON.stringify(req.session.token));
 				req.session.username = username;
 
 				res.writeHead(302, {'Location': '/'});
