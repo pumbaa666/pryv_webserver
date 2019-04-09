@@ -14,6 +14,7 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 const mongoDbUrl = 'mongodb://'+config.db_url+':'+config.db_port;
 const dbName = config.db_name;
+const sanitize = require('mongo-sanitize'); // Protect db againsts injection
 
 /*
  * JWT
@@ -217,8 +218,12 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function(req, res
 	}
 
 	var resource = JSON.parse(req.body.js_resource);
+	var newResource = new Object();
+	var id;
 	if(!resource.id)
-		resource.id = uuidv4();
+		newResource.id = uuidv4();
+	else
+		newResource.id = sanitize(resource.id);
 
 	if(!resource.data){
 		res.setHeader('Content-Type', 'text/html');
@@ -235,17 +240,18 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function(req, res
 
 	// Limit data size to 512 char maximum
 	for(var i = 0; i < data.length; i++)
-		data[i] = data[i].substring(0, 512);
+		data[i] = sanitize(data[i].substring(0, 512));
+	newResource.data = data;
 
-	resource.created = new Date().getTime();
-	resource.modified = resource.created;
+	newResource.created = new Date().getTime();
+	newResource.modified = newResource.created;
 
 	// Insert into DB
 	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
 		if(err) throw err;
 		const db = client.db(dbName);
 		const col = db.collection('Resources');
-		col.insertOne(resource, function(err, r) {
+		col.insertOne(newResource, function(err, r) {
 			res.writeHead(302, {'Location': '/resources'});
 			res.end();
 			client.close();
@@ -287,7 +293,7 @@ app.post('/resource/edit/:id', middleware.checkToken, urlencodedParser, function
 		const db = client.db(dbName);
 		const col = db.collection('Resources');
 		var currentTime = new Date().getTime();
-		col.findOneAndUpdate({_id: ObjectId(id)}, {$set: {data: data, modified: currentTime}}, function(err, r) {
+		col.findOneAndUpdate({_id: id}, {$set: {data: data, modified: currentTime}}, function(err, r) {
 			res.writeHead(302, {'Location': '/resources'});
 			res.end();
 			client.close();
@@ -319,7 +325,7 @@ app.get('/resource/delete/:id', middleware.checkToken, function(req, res) {
 		const db = client.db(dbName);
 		const col = db.collection('Resources');
 		var currentTime = new Date().getTime();
-		col.findOneAndUpdate({_id: ObjectId(id), deleted:undefined}, {$set: {data: [], modified: currentTime, deleted: currentTime}}, function(err, r) {
+		col.findOneAndUpdate({id: id, deleted:undefined}, {$set: {data: [], modified: currentTime, deleted: currentTime}}, function(err, r) {
 			res.writeHead(302, {'Location': '/resources'});
 			res.end();
 			client.close();

@@ -13,7 +13,7 @@ const mongoDbUrl = 'mongodb://'+config.db_url+':'+config.db_port;
 const dbName = config.db_name;
 
 var referenceUser = {_id: '5cab7a441c94682b7c59b225', username: 'Supername', password: 'secret_password'};
-var referenceResource = {id: '5cab7a441c94682b7c59b226', data: ["1", "2"]};
+var referenceResource = {_id: '5cab7a441c94682b7c59b226', id: '5cab7a441c94682b7c59b226', data: ["1", "2"]};
 
 var app = require('../http_server');
 var supertest = require('supertest');
