@@ -91,9 +91,6 @@ app.post('/users',  urlencodedParser, function(req, res) {
 	}
 	user.password = hash(user.password);
 
-	if(user._id)
-		user._id = ObjectId(user._id);
-
 	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
 		if(err) throw err;
 		const db = client.db(dbName);
