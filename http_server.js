@@ -108,31 +108,6 @@ app.post('/users',  urlencodedParser, function(req, res) {
 });
 
 /*
- * Delete user given the id.
- * No authentication required.
- */
-app.get('/user/delete/:id', function(req, res) {
-	if(!req.params.id) {
-		res.writeHead(302, {'Location': '/'});
-		res.end();
-		return;
-	}
-
-	var id = req.params.id;
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if(err) throw err;
-		const db = client.db(dbName);
-		const col = db.collection('Users');
-		col.findOneAndDelete({_id: ObjectId(id)}, function(err, r) { // TODO find secure way to create ObjectId
-			client.close();
-			res.writeHead(302, {'Location': '/'});
-			res.end();
-			return;
-		});
-	});
-});
-
-/*
  * Log the user if he provides a username and a password in a json object.
  * In case of success : stores a authentication token in the session.
  */

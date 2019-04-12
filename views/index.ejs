@@ -9,7 +9,7 @@
 	<h2>Users</h2>
 	<ul>
 		<% users.forEach(function(user, index) { %>
-			<li><a href="/user/delete/<%= user._id %>">✘</a> <%= user.username %></li>
+			<li><%= user.username %></li>
 		<% }); %>
 	</ul>
 

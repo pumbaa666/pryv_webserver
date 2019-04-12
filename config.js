@@ -5,5 +5,5 @@ module.exports = {
 	
 	db_url: 'localhost',
 	db_port: '27017',
-	db_name: 'PryvDB'
+	db_name: 'PryvDB',
 };

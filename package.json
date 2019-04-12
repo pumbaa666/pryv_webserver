@@ -18,7 +18,8 @@
 		"superagent": "~5.0.2"
 	},
 	"scripts": {
-		"test": "mocha --timeout 10000"
+		"test": "mocha --timeout 10000",
+		"start": "start"
 	},
 	"author": "Loic Correvon <loic.correvon@gmail.com>",
 	"description": "This coding exercise requires you to implement an HTTP API web service."
