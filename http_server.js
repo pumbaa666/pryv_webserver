@@ -87,7 +87,7 @@ app.post('/users', urlencodedParser, function (req, res) {
 
 /*
  * Log the user if he provides a username and a password in a json object.
- * In case of success : stores a authentication token in the session.
+ * In case of success : return a 48h-valid token
  */
 app.post('/auth/login', urlencodedParser, function (req, res) {
 	if (!req.body.username || !req.body.password)
@@ -103,10 +103,11 @@ app.post('/auth/login', urlencodedParser, function (req, res) {
 
 		// Matching credentials : return token
 		var token = jwt.sign({ username: username }, config.token.secret, { expiresIn: '48h' });
+		var result = {token: token};
 		logger.debug('creating token for user ' + username + ' : ' + token);
 
 		res.setHeader('Content-Type', 'application/json');
-		return res.status(200).json(token);
+		return res.status(200).json(result);
 	});
 });
 
@@ -132,6 +133,8 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function (req, re
 	if (!isUserAutenthicated(req, res))
 		return;
 
+	// logger.debug('Post Res : ' + req);
+	logger.debug('Post Res : ' + JSON.stringify(req.body));
 	if (!req.body.js_resource)
 		return handleError({ err: 'Missing resource' }, res);
 
@@ -154,7 +157,6 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function (req, re
 	newResource.created = new Date().getTime();
 	newResource.modified = newResource.created;
 
-	// Insert into DB
 	ResourcesModel.create(newResource, function (err, r) {
 		if (err) return handleError(err, res);
 		res.setHeader('Content-Type', 'application/json');
