@@ -11,8 +11,6 @@ var logger = log4js.getLogger('app');
  * Web
  */
 const express = require('express');
-const bodyParser = require('body-parser'); // Handle parameters in POST 
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 /*
  * Database
@@ -41,6 +39,7 @@ const uuidv4 = require('uuid/v4'); // Generate UUID. v4 means Random
 
 var app = express();
 app.use(express.static('scripts')); // Serves static files. Used in ./views/*.ejs files to include ./scripts/*.js
+app.use(express.json()); // Parse json object and put them in ithe request.body : https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
 //app.use(handleError);
 
 function handleError(err, res) {
@@ -50,8 +49,8 @@ function handleError(err, res) {
 
 function isUserAutenthicated(req, res) {
 	if (res && !req.headers.authorization.success) {
-		res.setHeader('Content-Type', 'text/plain');
-		res.status(401).send('You should be connected to do this operation. ' + req.headers.authorization.message);
+		res.setHeader('Content-Type', 'application/json');
+		res.status(401).json({error: {message: 'You should be connected to do this operation', reason: req.headers.authorization.message}});
 	}
 
 	return req.headers.authorization.success;
@@ -69,7 +68,7 @@ function hash(string) {
  * The payload is JSON.
  * No authentication required.
  */
-app.post('/users', urlencodedParser, function (req, res) {
+app.post('/users', function (req, res) {
 	var user = JSON.parse(req.body.js_user);
 	if (!user || !user.username || !user.password)
 		return handleError({ err: 'Missing username/password' }, res);
@@ -87,7 +86,7 @@ app.post('/users', urlencodedParser, function (req, res) {
  * Log the user if he provides a username and a password in a json object.
  * In case of success : return a 48h-valid token
  */
-app.post('/auth/login', urlencodedParser, function (req, res) {
+app.post('/auth/login', function (req, res) {
 	if (!req.body.username || !req.body.password)
 		return handleError({ err: 'Missing username/password' }, res);
 
@@ -123,11 +122,24 @@ app.get('/resources', middleware.checkToken, function (req, res) {
 	});
 });
 
+/**
+ * Strip array cells to @maxLength characters maximum.
+ * 
+ * @param {*} data Array to be striped
+ * @param {*} maxLength Maximum szie of each cell. Default is 512.
+ */
+function stripDataSize(data, maxLength) {
+	maxLength = maxLength | 512;
+	for (var i = 0; i < data.length; i++)
+		data[i] = sanitize(data[i].substring(0, maxLength));
+	return data;
+}
+
 /*
  * Add a new resource.
  * Authentication required.
  */
-app.post('/resource', middleware.checkToken, urlencodedParser, function (req, res) {
+app.post('/resource', middleware.checkToken, function (req, res) {
 	if (!isUserAutenthicated(req, res))
 		return;
 
@@ -145,10 +157,7 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function (req, re
 	if (!data || data.length <= 0)
 		return handleError({ err: 'One field required' }, res);
 
-	// Limit data size to 512 char maximum
-	for (var i = 0; i < data.length; i++)
-		data[i] = sanitize(data[i].substring(0, 512));
-	newResource.data = data;
+	newResource.data = stripDataSize(data);
 
 	newResource.created = new Date().getTime();
 	newResource.modified = newResource.created;
@@ -156,6 +165,7 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function (req, re
 	ResourcesModel.create(newResource, function (err, r) {
 		if (err) return handleError(err, res);
 		res.setHeader('Content-Type', 'application/json');
+		logger.debug('new resource created : ' + r);
 		return res.status(201).json(r);
 	});
 });
@@ -164,7 +174,7 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function (req, re
  * Edit data of a resource, providing its id.
  * Authentication required.
  */
-app.put('/resource/edit/:id', middleware.checkToken, urlencodedParser, function (req, res) {
+app.put('/resource/edit/:id', middleware.checkToken, function (req, res) {
 	if (!isUserAutenthicated(req, res))
 		return;
 
@@ -177,7 +187,12 @@ app.put('/resource/edit/:id', middleware.checkToken, urlencodedParser, function 
 
 	var js_resource = req.body['js_resource'];
 	var resource = JSON.parse(js_resource);
+
 	var data = resource.data;
+	if (!data || data.length <= 0)
+		return handleError({ err: 'One field required' }, res);
+	
+	data = stripDataSize(data);
 
 	var currentTime = new Date().getTime();
 	ResourcesModel.findOneAndUpdate({ id: id }, { $set: { data: data, modified: currentTime } }, { new: true }, function (err, r) {
@@ -217,8 +232,8 @@ app.delete('/resource/:id', middleware.checkToken, function (req, res) {
  * Page 404
  */
 app.use(function (req, res, next) {
-	res.setHeader('Content-Type', 'text/plain');
-	res.status(404).send('Unknown page !');
+	res.setHeader('Content-Type', 'application/json');
+	res.status(404).send({err: 'Unknown page !'});
 });
 
 app.listen(config.app.port);
