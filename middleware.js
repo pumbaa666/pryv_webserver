@@ -6,29 +6,45 @@
 let jwt = require('jsonwebtoken');
 const config = require('./config.js');
 
+/*
+ * Logger
+ */
+var log4js = require('log4js');
+log4js.configure('./config/log4js.json');
+var logger = log4js.getLogger('middleware');
+
 let checkToken = (req, res, next) => {
-	let token = req.headers.authorization.token;
+	logger.debug('-- checkToken --');
+
+	logger.debug('headers : '+JSON.stringify(req.headers));
+	let token = req.headers.authorization;
+	logger.debug('token : '+token);
+	/* req.headers.authorization = {token :'osef_token'};
+	token = req.headers.authorization.token;
+	logger.debug('token : '+token);
+	logger.debug('headers : '+JSON.stringify(req.headers)); */
+
 	
 	if(!token)
 	{
-		req.headers.authorization.token = {success: false, message: 'Auth token is not supplied'};
+		req.headers.authorization = {success: false, message: 'Auth token is not supplied'};
 		next();
 		return;
 	}
 
 	var bearer_str = 'Bearer ';
 	if (token.startsWith(bearer_str))
-		token = token.slice(bearer_str.length(), token.length);
+		token = token.slice(bearer_str.length, token.length);
 
-	jwt.verify(token, config.token_secret, (err, decoded) => {
+	jwt.verify(token, config.token.secret, (err, decoded) => {
 		if (err)
 		{
-			req.headers.authorization.token = {success: false, message: 'Token is not valid'};
+			req.headers.authorization = {success: false, message: 'Token is not valid'};
 			next();
 			return;
 		}
 
-		req.headers.authorization.token = {success: true};
+		req.headers.authorization = {success: true};
 		next();
 		return;
 	});

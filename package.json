@@ -3,24 +3,27 @@
 	"version": "0.1.0",
 	"dependencies": {
 		"body-parser": "~1.18.3",
-		"ejs": "~2.6.1",
-		"express": "~4.16.4",
-		"mongodb": "~3.2.3",
-		"mongo-sanitize": "1.0.1",
-		"sha": "~3.0.0",
-		"uuid": "~3.3.2",
-		"jsonwebtoken": "~8.5.1",
-		"express-session": "~1.15.6",
-		"mocha": "6.1.1",
 		"chai": "~4.2.0",
 		"chai-http": "~4.2.1",
+		"ejs": "~2.6.1",
+		"express": "~4.16.4",
+		"express-session": "~1.15.6",
+		"jsonwebtoken": "~8.5.1",
+		"log4js": "~4.1.0",
+		"mocha": "6.1.1",
+		"mongo-sanitize": "1.0.1",
+		"mongodb": "~3.2.3",
+		"sha": "~3.0.0",
+		"superagent": "~5.0.2",
 		"supertest": "~4.0.2",
-		"superagent": "~5.0.2"
+		"uuid": "~3.3.2",
+		"watch": "^1.0.2"
 	},
 	"scripts": {
 		"test": "mocha --timeout 10000",
 		"start": "start"
 	},
 	"author": "Loic Correvon <loic.correvon@gmail.com>",
-	"description": "This coding exercise requires you to implement an HTTP API web service."
+	"description": "This coding exercise requires you to implement an HTTP API web service.",
+	"devDependencies": {}
 }

@@ -1,9 +1,15 @@
-module.exports = {
-	app_port: 8080,
-	session_secret: 'ImBatman!',
-	token_secret: 'NoJoker',
-	
-	db_url: 'localhost',
-	db_port: '27017',
-	db_name: 'PryvDB',
+const config = {
+	app: {
+		port: 8080
+	},
+	database: {
+		url: 'localhost',
+		port: 27017,
+		name: 'PryvDB',
+	},
+	token: {
+		secret: 'NoJoker'
+	}
 };
+
+module.exports = config;

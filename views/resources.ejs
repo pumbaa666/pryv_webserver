@@ -17,6 +17,11 @@
 					(deleted on <%= new Date(resource.deleted).toDateString() %> at <%= new Date(resource.deleted).toTimeString() %>)
 				<% } else { %>
 					<a href='/resource/delete/<%= resource.id %>'>✘</a> <%= resource.id %>
+
+					<!--form action = '/resource/<%= resource.id %>' method="DELETE">
+						<input type="submit" value="X" />
+					</form-->
+
 					<% if(resource.created != resource.modified) { %>
 					(last modified : <%= new Date(resource.modified).toDateString() %> at <%= new Date(resource.modified).toTimeString() %>)
 					<% } else {%>
@@ -27,14 +32,42 @@
 						<% resource.data.forEach(function(dat, index) { %>
 						<input type = 'text' name = 'data#<%= i %>' value = '<%= dat %>' size = '4' maxlength = '512'/>
 						<% }); %>
-						<input type = 'hidden' name = 'js_resource_<%= resource.id %>' value = '' />
-						<input type = 'submit' value = 'edit' onclick='jsonify("form_resource_edit_<%= resource.id %>")' />
+						<input type = 'hidden' name = 'js_resource' value = '' />
+						<input type = 'submit' name = "edit" value = 'edit' onclick='jsonify("form_resource_edit_<%= resource.id %>")' />
 					</form>
 					<br/>
 				<% } %>
 			</li>
 		<% }); %>
 	</ul>
+
+	<!--h2>Resources delete</h2>
+	<ul>
+		<% resources.forEach(function(resource, index) { %>
+			<li>
+				<% if(resource.deleted) {%>
+					<%= resource.id %>
+					(deleted on <%= new Date(resource.deleted).toDateString() %> at <%= new Date(resource.deleted).toTimeString() %>)
+				<% } else { %>
+					<%= resource.id %>
+
+					<% if(resource.created != resource.modified) { %>
+					(last modified : <%= new Date(resource.modified).toDateString() %> at <%= new Date(resource.modified).toTimeString() %>)
+					<% } else {%>
+					(created : <%= new Date(resource.created).toDateString() %> at <%= new Date(resource.created).toTimeString() %>)
+					<% } %>
+					:
+					<form action = '/resource/delete/<%= resource.id %>' method = 'get'>
+						<% resource.data.forEach(function(dat, index) { %>
+						<input type = 'text' name = 'data#<%= i %>' value = '<%= dat %>' size = '4' maxlength = '512'/>
+						<% }); %>
+						<input type = "submit" name = "delete" value="X" />
+					</form>
+					<br/>
+				<% } %>
+			</li>
+		<% }); %>
+	</ul-->
 
 	<form id = 'form_resource' action = '/resource' method = 'post'>
 		Nouvelle resource :
