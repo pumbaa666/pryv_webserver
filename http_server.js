@@ -17,15 +17,13 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
 /*
  * Database
  */
-// const MongoClient = require('mongodb').MongoClient;
 const sanitize = require('mongo-sanitize'); // Protect db againsts injection
-// const dbName = config.database.name;
 const mongoose = require('mongoose');
 const mongoDbUrl = 'mongodb://' + config.database.url + ':' + config.database.port + '/' + config.database.name;
-logger.debug('db url : ' + mongoDbUrl);
-mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true});
+logger.debug('Connecting to Database : ' + mongoDbUrl);
+mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true}); // useCreateIndex : https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj01KKn4M_hAhUCKewKHZu3C_EQFjAAegQIBBAB&url=https%3A%2F%2Fgithub.com%2FAutomattic%2Fmongoose%2Fissues%2F6890&usg=AOvVaw1LQ5-k1g-Sr9xz0RQKIKlE
 const db = mongoose.connection; //Get the default connection
-//db.on('error', console.error.bind(console, 'MongoDB connection error:')); //Bind connection to error event (to get notification of connection errors)
+mongoose.set('useFindAndModify', false); // Don't show deprecation warning : https://github.com/Automattic/mongoose/issues/6880
 const UsersModel = require('./models/users')
 const ResourcesModel = require('./models/resources')
 
@@ -133,8 +131,6 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function (req, re
 	if (!isUserAutenthicated(req, res))
 		return;
 
-	// logger.debug('Post Res : ' + req);
-	logger.debug('Post Res : ' + JSON.stringify(req.body));
 	if (!req.body.js_resource)
 		return handleError({ err: 'Missing resource' }, res);
 
@@ -175,7 +171,6 @@ app.put('/resource/edit/:id', middleware.checkToken, urlencodedParser, function 
 	if (!req.params.id)
 		return handleError({ err: 'Missing resource id' }, res);
 
-	logger.debug('js_resource : ' + req.body.js_resource);
 	var id = req.params.id;
 	if (!req.body['js_resource'])
 		return handleError({ err: 'Missing data' }, res);
