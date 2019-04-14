@@ -26,7 +26,7 @@ let checkToken = (req, res, next) => {
 	if (token.startsWith(bearer_str))
 		token = token.slice(bearer_str.length, token.length);
 
-	logger.debug('checkToken - token = '+JSON.stringify(token));
+	// logger.debug('checkToken - token = '+JSON.stringify(token));
 	jwt.verify(token, config.token.secret, (err, decoded) => {
 		if (err) {
 			req.headers.authorization = { success: false, message: 'Token is not valid' };
