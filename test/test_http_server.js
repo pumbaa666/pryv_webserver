@@ -64,9 +64,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});
-	});
 
-	describe('/POST Users', () => {
 		it('it should not create a user without password', (done) => {
 			let user = {username: referenceUser.username};
 			let body = {js_user: JSON.stringify(user)};
@@ -80,9 +78,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});
-	});
 
-	describe('/POST Users', () => {
 		it('it should not create a user without username', (done) => {
 			let user = { password: referenceUser.password };
 			let body = { js_user: JSON.stringify(user) };
@@ -96,9 +92,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});
-	});
 
-	describe('/POST Users', () => {
 		it('it should create a user with username and password', (done) => {
 			let user = { username: referenceUser.username, password: referenceUser.password };
 			let body = { js_user: JSON.stringify(user) };
@@ -129,9 +123,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});
-	});
 
-	describe('/POST Auth', () => {
 		it('it should not authenticate without username', (done) => {
 			chai.request(server)
 				.post('/auth/login')
@@ -143,9 +135,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});
-	});
 
-	describe('/POST Auth', () => {
 		it('it should authenticate', (done) => {
 			chai.request(server)
 				.post('/auth/login')
@@ -171,9 +161,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});
-	});
 
-	describe('/GET resource', () => {
 		it('it should GET a resource', (done) => {
 			var agent = chai.request.agent(server);
 			agent
@@ -213,9 +201,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});	
-	});
 
-	describe('/POST resource', () => {
 		it('it should not create a resource without data', (done) => {
 			var agent = chai.request.agent(server);
 			agent
@@ -242,9 +228,7 @@ describe('Test all webserver endpoint', () => {
 						});
 				});
 		});	
-	});
 
-	describe('/POST resource', () => {
 		it('it should create a resource when logged', (done) => {
 			var agent = chai.request.agent(server);
 			agent
@@ -292,9 +276,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});	
-	});
-	
-	describe('/PUT resource', () => {
+
 		it('it should not edit a resource without data', (done) => {
 			var agent = chai.request.agent(server);
 			agent
@@ -322,9 +304,7 @@ describe('Test all webserver endpoint', () => {
 						});
 				});
 		});	
-	});
 
-	describe('/PUT resource', () => {
 		it('it should edit a resource when logged', (done) => {
 			var agent = chai.request.agent(server);
 			agent
@@ -370,9 +350,7 @@ describe('Test all webserver endpoint', () => {
 					done();
 				});
 		});	
-	});
-		
-	describe('/DELETE resource', () => {
+
 		it('it should delete a resource when logged', (done) => {
 			var agent = chai.request.agent(server);
 			agent
