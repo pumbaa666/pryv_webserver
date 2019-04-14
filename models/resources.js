@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Resources = new Schema({
-    id: String,
+    id: { type: String, unique: true },
     data: Array,
     created: Number,
     modified: Number,

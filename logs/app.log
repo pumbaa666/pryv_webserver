@@ -206,3 +206,83 @@
 [2019-04-14T15:05:35.821] [DEBUG] middleware - -- checkToken --
 [2019-04-14T15:05:35.821] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"8d724814-95de-491e-9e1f-825c43324fb1","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","connection":"keep-alive"}
 [2019-04-14T15:05:35.822] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:10:54.969] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:10:55.016] [INFO] app - Listening on port 8080
+[2019-04-14T15:11:17.105] [DEBUG] app - new user insertedDD : {"_id":"5cb331759361df20f8ec4a8b","username":"3","password":"N\u0007@�b�ۋ`�\u0005����\u0016�\"0�}�\u001fd\u000b~G)���","__v":0}
+[2019-04-14T15:14:42.960] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:14:43.007] [INFO] app - Listening on port 8080
+[2019-04-14T15:15:17.588] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:15:17.634] [INFO] app - Listening on port 8080
+[2019-04-14T15:16:56.761] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:16:56.808] [INFO] app - Listening on port 8080
+[2019-04-14T15:19:48.351] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:19:48.397] [INFO] app - Listening on port 8080
+[2019-04-14T15:20:10.285] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:20:10.287] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"ee4a0a47-49b4-43bf-9efc-69c7fed02493","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"0","connection":"keep-alive"}
+[2019-04-14T15:20:10.288] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:20:35.381] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:20:35.429] [INFO] app - Listening on port 8080
+[2019-04-14T15:20:38.806] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:20:38.807] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"30b42bed-fd91-4cfb-91fc-4d8971abc681","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"0","connection":"keep-alive"}
+[2019-04-14T15:20:38.808] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:21:11.383] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:21:11.384] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"a1b2c1f1-e993-4310-ba73-6f38c574dd95","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"37","connection":"keep-alive"}
+[2019-04-14T15:21:11.385] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:21:15.266] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:21:15.267] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"6cf2306b-21bf-4e3c-a546-0a6698ceb572","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
+[2019-04-14T15:21:15.267] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:21:59.604] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:21:59.652] [INFO] app - Listening on port 8080
+[2019-04-14T15:22:03.048] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:22:03.049] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"4fecf566-b354-47f3-9f7e-2afda418a040","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
+[2019-04-14T15:22:03.049] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:26:33.830] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:26:33.878] [INFO] app - Listening on port 8080
+[2019-04-14T15:27:36.112] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:27:36.161] [INFO] app - Listening on port 8080
+[2019-04-14T15:28:52.391] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:28:52.437] [INFO] app - Listening on port 8080
+[2019-04-14T15:28:55.017] [DEBUG] app - new user created : { _id: 5cb335973bb67e356c6ecbfa,
+  username: '3',
+  password: 'N\u0007@�b�ۋ`�\u0005����\u0016�"0�}�\u001fd\u000b~G)���',
+  __v: 0 }
+[2019-04-14T15:29:06.460] [DEBUG] app - creating token for user 3 : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyNDg1NDYsImV4cCI6MTU1NTQyMTM0Nn0.q6C2qFGhgoHWS1LOS0f15uTl_v40OSSHWCfbIKTV38k
+[2019-04-14T15:29:08.690] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:08.690] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"48a39f92-3f03-4957-828b-d7b13f73afe1","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","connection":"keep-alive"}
+[2019-04-14T15:29:08.691] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:10.702] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:10.703] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"c58d2037-2c99-4064-8033-c5f72a1cc281","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
+[2019-04-14T15:29:10.703] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:12.176] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:12.176] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"e587f686-7388-4751-8a08-e697fc59a4ca","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","connection":"keep-alive"}
+[2019-04-14T15:29:12.177] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:14.654] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:14.655] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"4bb8fee1-e738-4ce7-9015-c405c2c5f571","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"62","connection":"keep-alive"}
+[2019-04-14T15:29:14.655] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:14.656] [DEBUG] app - js_resource : {"data": ["AA", "BB"]}
+[2019-04-14T15:29:16.670] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:16.671] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"4e748bfa-a328-4358-bce3-b717878a89d0","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","connection":"keep-alive"}
+[2019-04-14T15:29:16.671] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:35.953] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:29:36.000] [INFO] app - Listening on port 8080
+[2019-04-14T15:29:39.352] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:39.353] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"dbf04019-d29d-4a23-b8f0-051a63c4c2f8","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"62","connection":"keep-alive"}
+[2019-04-14T15:29:39.353] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:39.364] [DEBUG] app - js_resource : {"data": ["AA", "BB"]}
+[2019-04-14T15:29:42.225] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:42.226] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"c39ad23e-efb1-4322-b911-a7ec628fbf63","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","connection":"keep-alive"}
+[2019-04-14T15:29:42.226] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:44.367] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:44.368] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"e00d546e-5994-483d-8ca3-913d875b890f","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"0","connection":"keep-alive"}
+[2019-04-14T15:29:44.368] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:29:46.521] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:29:46.522] [DEBUG] middleware - headers : {"cache-control":"no-cache","postman-token":"0975644f-2a82-41ca-95ec-e0b86f33ccfc","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","connection":"keep-alive"}
+[2019-04-14T15:29:46.522] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:32:08.331] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T15:32:08.378] [INFO] app - Listening on port 8080
+[2019-04-14T15:32:12.500] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:32:12.501] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"c4556dc2-2435-4fa4-b10b-7da7c7147baa","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
+[2019-04-14T15:32:12.502] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T15:32:15.092] [DEBUG] middleware - -- checkToken --
+[2019-04-14T15:32:15.092] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"a039687b-402c-48dd-aa49-6f7f94e950d8","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
+[2019-04-14T15:32:15.093] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
