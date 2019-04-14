@@ -17,10 +17,17 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
 /*
  * Database
  */
-const MongoClient = require('mongodb').MongoClient;
-const mongoDbUrl = 'mongodb://'+config.database.url+':'+config.database.port;
-const dbName = config.database.name;
+// const MongoClient = require('mongodb').MongoClient;
 const sanitize = require('mongo-sanitize'); // Protect db againsts injection
+// const dbName = config.database.name;
+const mongoose = require('mongoose');
+const mongoDbUrl = 'mongodb://'+config.database.url+':'+config.database.port+'/'+config.database.name;
+logger.debug('db url : '+mongoDbUrl);
+mongoose.connect(mongoDbUrl, { useNewUrlParser: true });
+const db = mongoose.connection; //Get the default connection
+//db.on('error', console.error.bind(console, 'MongoDB connection error:')); //Bind connection to error event (to get notification of connection errors)
+const UsersModel = require('./models/users')
+const ResourcesModel = require('./models/resources')
 
 /*
  * JWT
@@ -65,20 +72,13 @@ app.post('/users',  urlencodedParser, function(req, res) {
 		res.status(400).send('Missing username/password');
 		return;
 	}
-	logger.debug('req.psw = '+user.password);
 	user.password = hash(user.password);
-	logger.debug('psw = '+user.password);
 
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if(err) throw err;
-		const db = client.db(dbName);
-		const col = db.collection('Users');
-		col.insertOne(user, function(err, result) {
-			logger.debug('new user inserted : '+JSON.stringify(user));
-			client.close();
-			res.status(201).json(user);
-			return;
-		});
+	UsersModel.create(user, function (err, r) {
+		if (err) return handleError(err);
+		logger.debug('new user insertedDD : ' + JSON.stringify(r));
+		res.status(201).json(r);
+		return;
 	});
 });
 
@@ -87,35 +87,29 @@ app.post('/users',  urlencodedParser, function(req, res) {
  * In case of success : stores a authentication token in the session.
  */
 app.post('/auth/login', urlencodedParser, function(req, res) {
-	logger.debug('--- Login ---');
 	if(!req.body.username || !req.body.password) {
 		res.status(400).send('Missing username/password');
 		return;
 	}
-	logger.debug('req.username = '+req.body.username + ' / req.psw = '+req.body.password)
+
 	var username = req.body.username;
 	var password = hash(req.body.password);
-	logger.debug('username = '+username + ' / psw = '+password)
 
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if (err) throw err;
-		const db = client.db(dbName);
-		const col = db.collection('Users');
-		col.findOne({ username: username, password: password }, function (err, user) {
-			if (user) { // Matching credentials : put token from jwt in the session and redirect user to index
-				res.setHeader('Content-Type', 'application/json');
-
-				var token = jwt.sign({ username: username }, config.token.secret, { expiresIn: '48h' });
-				logger.debug('token : ' + token);
-
-				res.status(200).json(token);
-				return;
-			}
-
+	UsersModel.findOne({ username: username, password: password }, function (err, user) {
+		if (err) return handleError(err);
+		if (!user) {
 			res.setHeader('Content-Type', 'text/plain');
 			res.status(400).send('Bad credentials !');
 			return;
-		});
+		}
+
+		// Matching credentials : return token
+		var token = jwt.sign({ username: username }, config.token.secret, { expiresIn: '48h' });
+		logger.debug('creating token for user '+username+' : ' + token);
+
+		res.setHeader('Content-Type', 'application/json');
+		res.status(200).json(token);
+		return;
 	});
 });
 
@@ -127,16 +121,9 @@ app.get('/resources', middleware.checkToken, function(req, res) {
 	if(!isUserAutenthicated(req, res))
 		return;
 
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if(err) throw err;
-		const db = client.db(dbName);
-		const resources_col = db.collection('Resources');
-		resources_col.find({}).toArray(function(err, resources) {
-			client.close();
-			// res.setHeader('Content-Type', 'text/html');
-			// res.render('resources.ejs', {resources:resources, logged: isUserAutenthicated(req, false)});
-			res.status(200).json(resources);
-		});
+	ResourcesModel.find({}, function(err, resources) {
+		if (err) return handleError(err);
+		res.status(200).json(resources);
 	});
 });
 
@@ -183,16 +170,11 @@ app.post('/resource', middleware.checkToken, urlencodedParser, function(req, res
 	newResource.modified = newResource.created;
 
 	// Insert into DB
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if(err) throw err;
-		const db = client.db(dbName);
-		const col = db.collection('Resources');
-		col.insertOne(newResource, function(err, r) {
-			res.setHeader('Content-Type', 'application/json');
-			res.status(201).json(newResource);
-			client.close();
-			return;
-		});
+	ResourcesModel.create(newResource, function(err, r) {
+		if (err) return handleError(err);
+		res.setHeader('Content-Type', 'application/json');
+		res.status(201).json(r);
+		return;
 	});
 });
 
@@ -225,30 +207,19 @@ app.put('/resource/edit/:id', middleware.checkToken, urlencodedParser, function(
 	var data = resource.data;
 	logger.debug('data : '+data);
 
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if(err) throw err;
-		const db = client.db(dbName);
-		const col = db.collection('Resources');
-		var currentTime = new Date().getTime();
-		col.findOneAndUpdate({id: id}, {$set: {data: data, modified: currentTime}}, {returnOriginal:false}, function(err, result) {
-			res.setHeader('Content-Type', 'application/json');
-			client.close();
+ 	var currentTime = new Date().getTime();
+	ResourcesModel.findOneAndUpdate({id: id}, {$set: {data: data, modified: currentTime}}, {returnOriginal:false}, function(err, r) {
+		if (err) return handleError(err);
+		res.setHeader('Content-Type', 'application/json');
 
-			logger.debug("err : "+JSON.stringify(err));
-			if(err) {
-				res.json(err);
-				return;
-			}
-
-			logger.debug("result.value : "+JSON.stringify(result.value));
-			if(!result.value) {
-				res.status(204).json({error: "No resource to edit"});
-				return;
-			}
-
-			res.status(201).json(result.value);
+		logger.debug("r : "+JSON.stringify(r));
+		if(!r) {
+			res.status(204).json({error: "No resource to edit"});
 			return;
-		});
+		}
+
+		res.status(201).json(r);
+		return;
 	});
 });
 
@@ -263,18 +234,13 @@ app.delete('/resource/:id', middleware.checkToken, function(req, res) {
 	}
 
 	var id = req.params.id;
-	MongoClient.connect(mongoDbUrl, {useNewUrlParser: true}, function (err, client) {
-		if(err) throw err;
-		const db = client.db(dbName);
-		const col = db.collection('Resources');
-		var currentTime = new Date().getTime();
+	var currentTime = new Date().getTime();
 
-		col.findOneAndUpdate({id: id, deleted:undefined}, {$set: {data: [], modified: currentTime, deleted: currentTime}}, {returnOriginal:false}, function(err, result) {
-			res.setHeader('Content-Type', 'application/json');
-			client.close();
-			res.status(200).json(result.value);
-			return;
-		});
+	// Return updated result : https://stackoverflow.com/questions/32811510/mongoose-findoneandupdate-doesnt-return-updated-document
+	ResourcesModel.findOneAndUpdate({id: id, deleted:undefined}, {$set: {data: [], modified: currentTime, deleted: currentTime}}, {new: true}, function(err, result) {
+		res.setHeader('Content-Type', 'application/json');
+		res.status(200).json(result);
+		return;
 	});
 });
 
