@@ -339,3 +339,11 @@
 [2019-04-14T16:02:54.588] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"abf01c0a-4387-4566-b825-9015e3844dd1","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
 [2019-04-14T16:02:54.588] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
 [2019-04-14T16:02:54.589] [DEBUG] app - Post Res : {"js_resource":"{\"id\":\"10\", \"data\": [\"ab\", \"cd\"]}"}
+[2019-04-14T16:04:20.020] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T16:04:20.068] [INFO] app - Listening on port 8080
+[2019-04-14T16:04:29.766] [DEBUG] middleware - -- checkToken --
+[2019-04-14T16:04:29.767] [DEBUG] middleware - headers : {"content-type":"application/x-www-form-urlencoded","cache-control":"no-cache","postman-token":"3d1078bd-c268-433f-a635-e1ee4864c668","authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM","user-agent":"PostmanRuntime/7.11.0","accept":"*/*","host":"127.0.0.1:8080","accept-encoding":"gzip, deflate","content-length":"87","connection":"keep-alive"}
+[2019-04-14T16:04:29.767] [DEBUG] middleware - token : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjMiLCJpYXQiOjE1NTUyMzI1NDAsImV4cCI6MTU1NTQwNTM0MH0.Djr5GchQnRYw8QYgCbMyYcr0PqJtsIqdZ1Ckxwt2MgM
+[2019-04-14T16:04:29.780] [DEBUG] app - Post Res : {"js_resource":"{\"id\":\"10\", \"data\": [\"ab\", \"cd\"]}"}
+[2019-04-14T16:05:37.942] [DEBUG] app - db url : mongodb://localhost:27017/PryvDB
+[2019-04-14T16:05:37.994] [INFO] app - Listening on port 8080

@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var Resources = new Schema({
     id: { type: String, unique: true },
-    data: Array,
+    data: [String],
     created: Number,
     modified: Number,
     deleted: Number

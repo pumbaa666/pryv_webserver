@@ -23,7 +23,7 @@ const sanitize = require('mongo-sanitize'); // Protect db againsts injection
 const mongoose = require('mongoose');
 const mongoDbUrl = 'mongodb://' + config.database.url + ':' + config.database.port + '/' + config.database.name;
 logger.debug('db url : ' + mongoDbUrl);
-mongoose.connect(mongoDbUrl, { useNewUrlParser: true });
+mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true});
 const db = mongoose.connection; //Get the default connection
 //db.on('error', console.error.bind(console, 'MongoDB connection error:')); //Bind connection to error event (to get notification of connection errors)
 const UsersModel = require('./models/users')
