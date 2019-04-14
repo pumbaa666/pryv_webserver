@@ -66,22 +66,6 @@ describe('Test all webserver endpoint', () => {
 		});
 	});
 
-	// describe.skip('/POST Users', () => {
-	// 	it('it should not create an empty user', (done) => {
-	// 		let user = {};
-	// 		let body = {js_user: JSON.stringify(user)};
-	// 		chai.request(server)
-	// 			.post('/users')
-	// 			.set('Content-Type', 'application/json')
-	// 			.send(body)
-	// 			.end((err, res) => {
-	// 				res.should.have.status(400);
-	// 				res.body.should.have.property('err').eql('Missing username/password');
-	// 				done();
-	// 			});
-	// 	});
-	// });
-
 	describe('/POST Users', () => {
 		it('it should not create a user without password', (done) => {
 			let user = {username: referenceUser.username};
