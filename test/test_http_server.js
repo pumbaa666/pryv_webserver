@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const should = chai.should();
-const server = require('../http_server');
+const server = require('../src/http_server');
 const async_series = require('async').series;
 
 /*
@@ -49,15 +49,16 @@ function clearDatabase(done) {
 describe('Test all webserver endpoint', () => {
 	before((done) => {
 		logger.debug('BEFORE');
-		async_series([
+		// async_series([
 			// Clear database
-			(done) => {
-				clearDatabase(done);
-			},
+			// (done) => {
+			// 	clearDatabase(done);
+			// },
 
 			// Create user, login, save token
-			(done) => {
-				let user = { username: referenceUser.username, password: referenceUser.password };
+			// (done) => {
+				logger.debug('create user, login, etc');
+				let user = { username: referenceUser.username+"_admin", password: referenceUser.password };
 				let body = { js_user: JSON.stringify(user) };
 	
 				// Create user
@@ -73,7 +74,7 @@ describe('Test all webserver endpoint', () => {
 						chai.request(server)
 							.post('/auth/login')
 							.set('Content-Type', 'application/json')
-							.send({ username: referenceUser.username, password: referenceUser.password })
+							.send({ username: referenceUser.username+"_admin", password: referenceUser.password })
 							.then(function (res) {
 								// Save token to authenticate future requests
 								res.should.have.status(200);
@@ -82,11 +83,13 @@ describe('Test all webserver endpoint', () => {
 								done();
 							});
 					});
-			},
-		],
-		() => {
-			done();
-		});
+			// },
+		// ],
+
+		// // Terminate the "before" assignement
+		// () => {
+		// 	done();
+		// });
 	});
 	
 	after((done) => {
@@ -96,6 +99,7 @@ describe('Test all webserver endpoint', () => {
 
 	describe('/POST Users', () => {
 		it('it should not create an empty user', (done) => {
+			logger.debug('Start first test');
 			let user = {};
 			let body = {js_user: JSON.stringify(user)};
 			chai.request(server)
