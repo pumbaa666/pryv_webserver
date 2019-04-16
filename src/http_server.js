@@ -159,12 +159,12 @@ app.post('/resource', middleware.checkToken, function (req, res, next) {
 	newResource.created = new Date().getTime();
 	newResource.modified = newResource.created;
 
-	ResourcesModel.create(newResource, function (error, r) {
+	ResourcesModel.create(newResource, function (error, resource) {
 		if (error)
 			return next(error);
 		res.setHeader('Content-Type', 'application/json');
-		logger.debug('new resource created : ' + r);
-		return res.status(201).json(r);
+		logger.debug('new resource created : ' + resource);
+		return res.status(201).json(resource);
 	});
 });
 
@@ -193,15 +193,15 @@ app.put('/resource/edit/:id', middleware.checkToken, function (req, res, next) {
 	data = stripDataSize(data);
 
 	var currentTime = new Date().getTime();
-	ResourcesModel.findOneAndUpdate({ id: id }, { $set: { data: data, modified: currentTime } }, { new: true }, function (error, r) {
+	ResourcesModel.findOneAndUpdate({ id: id }, { $set: { data: data, modified: currentTime } }, { new: true }, function (error, resource) {
 		if (error)
 			return next(error);
 		res.setHeader('Content-Type', 'application/json');
 
-		if (!r)
+		if (!resource)
 			return res.status(204).json({ error: "No resource to edit" });
 
-		return res.status(201).json(r);
+		return res.status(201).json(resource);
 	});
 });
 
