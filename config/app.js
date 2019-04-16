@@ -9,6 +9,10 @@ const config = {
 	},
 	token: {
 		secret: 'NoJoker'
+	},
+	resource: {
+		maxCellLength: 512,
+		maxArrayLength: 10
 	}
 };
 
