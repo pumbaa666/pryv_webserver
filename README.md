@@ -11,30 +11,30 @@ and runing on port 27017
 $git clone https://github.com/pumbaa666/pryv_webserver.git
 
 /*------------------------*\
-|* INSTALLATION & RUNNING *|
+|*      INSTALLATION      *|
 \*------------------------*/
 Close any app running on port 8080 (or modify app_port in config.js to your needs) and
 $cd pryv_webserver
 $npm install
-$node http_server.js
 
 /*------------------------*\
 |*       LAUNCHING        *|
 \*------------------------*/
-Launch your favorite browser and open http://localhost:8080/
-alernatively you can see a working version on http://www.pumbaa.ch:8080/
-(or modify app_port in config.js to your needs)
+$node http_server.js
 
 /*------------------------*\
 |*         USING          *|
 \*------------------------*/
-Start by creating a new user, providing a username and a password
-Then login using the same credentials.
-Once logged, navigate to the resources page.
-Create a resource. You have to provide at least one field.
-Edit the resource by changing the field provided before.
-Then delete the resource by clicking the "✘".
-Finally you can logout.
+These routes are available :
+
+Route				Type	Requested parameter(s)						Auth.	Content-Type		Return							Code OK	Code KO
+---------------------------------------------------------------------------------------------------------------------------------------------------
+/users				post	{user : username, password}					no		application/json	The created user (or error)		201		400	
+/auth/login			post	username, password							no		application/json	Token valid 48h (or error)		200		400	
+/resources			get		-											yes		-					Array of resources	200		
+/resources			post	{resource : id, fields : [data1, data2, …]}	yes		application/json	The created resource (or error)	201		400	
+/resource/edit/:id	put		{resource : fields : [data1, data2, …]}		yes		application/json	The edited resource (or error)	201/204	400
+/resource/:id		delete	-											yes		-					The edited resource (or error)	200		400	
 
 /*------------------------*\
 |*        TESTING         *|

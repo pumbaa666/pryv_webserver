@@ -301,7 +301,7 @@ describe('Test all api endpoints', () => {
 
 	describe('/PUT resource', () => {
 		it('it should not edit a resource without being logged', (done) => {
-			var resource = { id: referenceResource.id, data: referenceResource.data };
+			var resource = { data: referenceResource.data };
 			var body = { resource: JSON.stringify(resource) };
 			chai.request(server)
 				.put('/resource/edit/' + referenceResource.id)
