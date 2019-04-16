@@ -3,7 +3,7 @@
 \*------------------------*/
 A MongoDB database installed locally
 and runing on port 27017
-(or modify db_url and db_port in config.js to your needs)
+(or modify database.url and database.port in config.js to your needs)
 
 /*------------------------*\
 |*        DOWNLOAD        *|
@@ -13,7 +13,7 @@ $git clone https://github.com/pumbaa666/pryv_webserver.git
 /*------------------------*\
 |*      INSTALLATION      *|
 \*------------------------*/
-Close any app running on port 8080 (or modify app_port in config.js to your needs) and
+Close any app running on port 8080 (or modify app.port in config.js to your needs) and
 $cd pryv_webserver
 $npm install
 
@@ -39,5 +39,5 @@ Route				Type	Requested parameter(s)						Auth.	Content-Type		Return							Code 
 /*------------------------*\
 |*        TESTING         *|
 \*------------------------*/
-Close any app running on port 8080 (or modify app_port in config.js to your needs) and
+Close any app running on port 8080 (or modify app.port in config.js to your needs) and
 $npm test
