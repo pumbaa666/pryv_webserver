@@ -18,9 +18,6 @@ const express = require('express');
 const sanitize = require('mongo-sanitize'); // Protect db againsts injection
 const mongoose = require('mongoose');
 const mongoDbUrl = 'mongodb://' + config.database.url + ':' + config.database.port + '/' + config.database.name;
-logger.info('Connecting to Database : ' + mongoDbUrl);
-mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true }); // useCreateIndex : https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj01KKn4M_hAhUCKewKHZu3C_EQFjAAegQIBBAB&url=https%3A%2F%2Fgithub.com%2FAutomattic%2Fmongoose%2Fissues%2F6890&usg=AOvVaw1LQ5-k1g-Sr9xz0RQKIKlE
-const db = mongoose.connection; //Get the default connection
 mongoose.set('useFindAndModify', false); // Don't show deprecation warning : https://github.com/Automattic/mongoose/issues/6880
 const UsersModel = require('../models/users')
 const ResourcesModel = require('../models/resources')
@@ -36,6 +33,7 @@ const middleware = require('./middleware');
  */
 const crypto = require('crypto');
 const uuidv4 = require('uuid/v4'); // Generate UUID. v4 means Random
+const async_series = require('async').series;
 
 var app = express();
 app.use(express.static('scripts')); // Serves static files. Used in ./views/*.ejs files to include ./scripts/*.js
@@ -241,6 +239,16 @@ function errorHandler(error, req, res, next) {
 }
 app.use(errorHandler);
 
-app.listen(config.app.port);
-logger.info('Listening on port ' + config.app.port);
+async_series([
+	(done) => {
+		logger.info('Connecting to Database : ' + mongoDbUrl);
+		mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true }); // useCreateIndex : https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj01KKn4M_hAhUCKewKHZu3C_EQFjAAegQIBBAB&url=https%3A%2F%2Fgithub.com%2FAutomattic%2Fmongoose%2Fissues%2F6890&usg=AOvVaw1LQ5-k1g-Sr9xz0RQKIKlE
+		done();
+	},
+	(done) => {
+		logger.info('Listening on port ' + config.app.port);
+		app.listen(config.app.port);
+		done();
+	}
+]);
 module.exports = app; // for testing

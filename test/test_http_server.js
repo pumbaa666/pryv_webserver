@@ -12,35 +12,50 @@ const async_series = require('async').series;
 var log4js = require('log4js');
 log4js.configure('./config/log4js.json');
 var logger = log4js.getLogger('tests');
-logger.debug('config : '+config.resource);
 
 /*
  * Database
  */
-const UsersModel = require('../models/users')
-const ResourcesModel = require('../models/resources')
+const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false); // Don't show deprecation warning : https://github.com/Automattic/mongoose/issues/6880
+const mongoDbUrl = 'mongodb://' + config.database.url + ':' + config.database.port + '/' + config.database.name;
+// const UsersModel = require('../models/users')
+// const ResourcesModel = require('../models/resources')
 
 /*
  * Data
  */
-var referenceUser = {username: 'Supername', password: 'secret_password'};
-var referenceResource = {id: '5cab7a441c94682b7c59b226', data: {fields: ["1", "2"]}};
+var referenceUser = { username: 'Supername', password: 'secret_password' };
+var referenceResource = { id: '5cab7a441c94682b7c59b226', data: { fields: ["1", "2"] } };
 var token;
 
 chai.use(chaiHttp);
 
 function clearDatabase(done) {
 	logger.debug('start clearing');
+
+	var db;
 	async_series([
 		(done) => {
+			// useCreateIndex : https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj01KKn4M_hAhUCKewKHZu3C_EQFjAAegQIBBAB&url=https%3A%2F%2Fgithub.com%2FAutomattic%2Fmongoose%2Fissues%2F6890&usg=AOvVaw1LQ5-k1g-Sr9xz0RQKIKlE
+			mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true }, () => {
+				db = mongoose.connection;
+				done();
+			});
+		},
+		(done) => {
 			logger.debug('clearing users');
-			UsersModel.collection.drop();
-			done();
+			db.dropCollection('users', () => {
+				logger.debug('users cleared');
+				done();
+			});
 		},
 		(done) => {
 			logger.debug('clearing resources');
-			ResourcesModel.collection.drop();
-			done();
+			db.dropCollection('resources', () => {
+				logger.debug('resources cleared');
+				done();
+			});
 		}
 	],
 	() => {
@@ -59,52 +74,54 @@ describe('Test all api endpoints', () => {
 
 			// Create user
 			(done) => {
-				let user = { username: referenceUser.username+"_admin", password: referenceUser.password };
+				let user = { username: referenceUser.username + "_admin", password: referenceUser.password };
 				let body = { user: JSON.stringify(user) };
 
 				// Create user
 				chai.request(server)
-				.post('/users')
-				.set('Content-Type', 'application/json')
-				.send(body)
-				.end((error, res) => {
-					res.should.have.status(201);
-					res.body.should.have.property('_id');
-					done();
-				});
+					.post('/users')
+					.set('Content-Type', 'application/json')
+					.send(body)
+					.end((error, res) => {
+						res.should.have.status(201);
+						res.body.should.have.property('_id');
+						done();
+					});
 			},
 
 			// Login using previously created user
 			// Save the token in global variable
 			(done) => {
 				chai.request(server)
-				.post('/auth/login')
-				.set('Content-Type', 'application/json')
-				.send({ username: referenceUser.username+"_admin", password: referenceUser.password })
-				.then(function (res) {
-					// Save token to authenticate future requests
-					res.should.have.status(200);
-					res.body.should.have.property('token').not.null;
-					token = res.body.token;
-					done();
-				});
+					.post('/auth/login')
+					.set('Content-Type', 'application/json')
+					.send({ username: referenceUser.username + "_admin", password: referenceUser.password })
+					.then(function (res) {
+						// Save token to authenticate future requests
+						res.should.have.status(200);
+						res.body.should.have.property('token').not.null;
+						token = res.body.token;
+						done();
+					});
 			}
 		],
 
 		// Terminate the "before" assignement
 		() => {
+			logger.debug('before is ended');
 			done();
 		});
 	});
-	
+
 	after((done) => {
 		clearDatabase(done);
+		// done();
 	});
 
 	describe('/POST Users', () => {
 		it('it should not create an empty user', (done) => {
 			let user = {};
-			let body = {user: JSON.stringify(user)};
+			let body = { user: JSON.stringify(user) };
 			chai.request(server)
 				.post('/users')
 				.set('Content-Type', 'application/json')
@@ -117,8 +134,8 @@ describe('Test all api endpoints', () => {
 		});
 
 		it('it should not create a user without password', (done) => {
-			let user = {username: referenceUser.username};
-			let body = {user: JSON.stringify(user)};
+			let user = { username: referenceUser.username };
+			let body = { user: JSON.stringify(user) };
 			chai.request(server)
 				.post('/users')
 				.set('Content-Type', 'application/json')
@@ -167,7 +184,7 @@ describe('Test all api endpoints', () => {
 			chai.request(server)
 				.post('/auth/login')
 				.set('Content-Type', 'application/json')
-				.send({username: referenceUser.username})
+				.send({ username: referenceUser.username })
 				.end((error, res) => {
 					res.should.have.status(400);
 					res.body.should.have.property('error').eql('Missing username/password');
@@ -179,7 +196,7 @@ describe('Test all api endpoints', () => {
 			chai.request(server)
 				.post('/auth/login')
 				.set('Content-Type', 'application/json')
-				.send({password: referenceUser.password})
+				.send({ password: referenceUser.password })
 				.end((error, res) => {
 					res.should.have.status(400);
 					res.body.should.have.property('error').eql('Missing username/password');
@@ -191,8 +208,8 @@ describe('Test all api endpoints', () => {
 			chai.request(server)
 				.post('/auth/login')
 				.set('Content-Type', 'application/json')
-				.send({username: referenceUser.username})
-				.send({password: referenceUser.password})
+				.send({ username: referenceUser.username })
+				.send({ password: referenceUser.password })
 				.end((error, res) => {
 					res.should.have.status(200);
 					res.body.should.have.property('token').not.null;
@@ -228,8 +245,8 @@ describe('Test all api endpoints', () => {
 
 	describe('/POST resource', () => {
 		it('it should not create a resource without being logged', (done) => {
-			var resource = {id: referenceResource.id, data: referenceResource.data};
-			var body = {resource: JSON.stringify(resource)};
+			var resource = { id: referenceResource.id, data: referenceResource.data };
+			var body = { resource: JSON.stringify(resource) };
 			chai.request(server)
 				.post('/resource')
 				.set('Content-Type', 'application/json')
@@ -240,10 +257,10 @@ describe('Test all api endpoints', () => {
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
 					done();
 				});
-		});	
+		});
 
 		it('it should not create a resource without data', (done) => {
-			var resource = { id: referenceResource.id, fields: []};
+			var resource = { id: referenceResource.id, fields: [] };
 			var body = { resource: JSON.stringify(resource) };
 			chai.request(server)
 				.post('/resource')
@@ -256,13 +273,13 @@ describe('Test all api endpoints', () => {
 					done();
 				});
 		});
-	
+
 		it('it should create a resource with max 10 data', (done) => {
 			var oversizedData = [];
-			for(var i = 0; i < config.resource.maxArrayLength+10; i++)
-				oversizedData[i] = ''+i;
+			for (var i = 0; i < config.resource.maxArrayLength + 10; i++)
+				oversizedData[i] = '' + i;
 
-			var resource = { id: referenceResource.id, data: {fields: oversizedData} };
+			var resource = { id: referenceResource.id, data: { fields: oversizedData } };
 			var body = { resource: JSON.stringify(resource) };
 			chai.request(server)
 				.post('/resource')
@@ -278,16 +295,16 @@ describe('Test all api endpoints', () => {
 					res.body.data.length.should.be.eql(10);
 					done();
 				});
-		});	
+		});
 
 	});
-	
+
 	describe('/PUT resource', () => {
 		it('it should not edit a resource without being logged', (done) => {
-			var resource = {id: referenceResource.id, data: referenceResource.data};
-			var body = {resource: JSON.stringify(resource)};
+			var resource = { id: referenceResource.id, data: referenceResource.data };
+			var body = { resource: JSON.stringify(resource) };
 			chai.request(server)
-				.put('/resource/edit/'+referenceResource.id)
+				.put('/resource/edit/' + referenceResource.id)
 				.set('Content-Type', 'application/json')
 				.send(body)
 				.end((error, res) => {
@@ -296,10 +313,10 @@ describe('Test all api endpoints', () => {
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
 					done();
 				});
-		});	
+		});
 
 		it('it should not edit a resource without data', (done) => {
-			var resource = { id: referenceResource.id, data: {fields: []} };
+			var resource = { id: referenceResource.id, data: { fields: [] } };
 			var body = { resource: JSON.stringify(resource) };
 
 			chai.request(server)
@@ -312,11 +329,11 @@ describe('Test all api endpoints', () => {
 					res.body.should.have.property('error').eql('One field required');
 					done();
 				});
-		});	
+		});
 
 		it('it should edit a resource when logged', (done) => {
-			var newData =  ['a', 1, 'c'];
-			var resource = { id: referenceResource.id, data: {fields: newData} };
+			var newData = ['a', 1, 'c'];
+			var resource = { id: referenceResource.id, data: { fields: newData } };
 			var body = { resource: JSON.stringify(resource) };
 
 			chai.request(server)
@@ -335,18 +352,18 @@ describe('Test all api endpoints', () => {
 				});
 		});
 	});
-	
+
 	describe('/DELETE resource', () => {
 		it('it should not delete a resource without being logged', (done) => {
 			chai.request(server)
-				.delete('/resource/'+referenceResource.id)
+				.delete('/resource/' + referenceResource.id)
 				.end((error, res) => {
 					res.should.have.status(401);
 					res.body.should.have.property('error');
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
 					done();
 				});
-		});	
+		});
 
 		it('it should delete a resource when logged', (done) => {
 			chai.request(server)
@@ -362,5 +379,5 @@ describe('Test all api endpoints', () => {
 					done();
 				});
 		});
-	});	
+	});
 });
