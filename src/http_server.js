@@ -19,7 +19,7 @@ const sanitize = require('mongo-sanitize'); // Protect db againsts injection
 const mongoose = require('mongoose');
 const mongoDbUrl = 'mongodb://' + config.database.url + ':' + config.database.port + '/' + config.database.name;
 logger.debug('Connecting to Database : ' + mongoDbUrl);
-mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true}); // useCreateIndex : https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj01KKn4M_hAhUCKewKHZu3C_EQFjAAegQIBBAB&url=https%3A%2F%2Fgithub.com%2FAutomattic%2Fmongoose%2Fissues%2F6890&usg=AOvVaw1LQ5-k1g-Sr9xz0RQKIKlE
+mongoose.connect(mongoDbUrl, { useNewUrlParser: true, useCreateIndex: true }); // useCreateIndex : https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj01KKn4M_hAhUCKewKHZu3C_EQFjAAegQIBBAB&url=https%3A%2F%2Fgithub.com%2FAutomattic%2Fmongoose%2Fissues%2F6890&usg=AOvVaw1LQ5-k1g-Sr9xz0RQKIKlE
 const db = mongoose.connection; //Get the default connection
 mongoose.set('useFindAndModify', false); // Don't show deprecation warning : https://github.com/Automattic/mongoose/issues/6880
 const UsersModel = require('../models/users')
@@ -44,7 +44,7 @@ app.use(express.json()); // Parse json object and put them in ithe request.body 
 function isUserAutenthicated(req, res) {
 	if (res && !req.headers.authorization.success) {
 		res.setHeader('Content-Type', 'application/json');
-		res.status(401).json({error: {message: 'You should be connected to do this operation', reason: req.headers.authorization.message}});
+		res.status(401).json({ error: { message: 'You should be connected to do this operation', reason: req.headers.authorization.message } });
 	}
 
 	return req.headers.authorization.success;
@@ -69,10 +69,11 @@ app.post('/users', function (req, res, next) {
 
 	user.password = hash(user.password);
 
-	UsersModel.create(user, function (error, r) {
-		if (error) return next(error, res);
-		logger.debug('new user created : ' + r);
-		return res.status(201).json(r);
+	UsersModel.create(user, function (error, user) {
+		if (error)
+			return next(error);
+		logger.debug('new user created : ' + user);
+		return res.status(201).json(user);
 	});
 });
 
@@ -82,19 +83,20 @@ app.post('/users', function (req, res, next) {
  */
 app.post('/auth/login', function (req, res, next) {
 	if (!req.body.username || !req.body.password)
-		return next({ error: 'Missing username/password' }, res);
+		return next({ error: 'Missing username/password' });
 
 	var username = req.body.username;
 	var password = hash(req.body.password);
 
 	UsersModel.findOne({ username: username, password: password }, function (error, user) {
-		if (error) return next(error, res);
+		if (error)
+			return next(error);
 		if (!user)
-			return next({ error: 'Bad credentials' }, res);
+			return next({ error: 'Bad credentials' });
 
 		// Matching credentials : return token
 		var token = jwt.sign({ username: username }, config.token.secret, { expiresIn: '48h' });
-		var result = {token: token};
+		var result = { token: token };
 		logger.debug('creating token for user ' + username + ' : ' + token);
 
 		res.setHeader('Content-Type', 'application/json');
@@ -111,7 +113,8 @@ app.get('/resources', middleware.checkToken, function (req, res, next) {
 		return;
 
 	ResourcesModel.find({}, function (error, resources) {
-		if (error) return next(error, res);
+		if (error)
+			return next(error);
 		return res.status(200).json(resources);
 	});
 });
@@ -138,7 +141,7 @@ app.post('/resource', middleware.checkToken, function (req, res, next) {
 		return;
 
 	if (!req.body.js_resource)
-		return next({ error: 'Missing resource' }, res);
+		return next({ error: 'Missing resource' });
 
 	var resource = JSON.parse(req.body.js_resource);
 	var newResource = new Object();
@@ -149,7 +152,7 @@ app.post('/resource', middleware.checkToken, function (req, res, next) {
 
 	var data = resource.data;
 	if (!data || data.length <= 0)
-		return next({ error: 'One field required' }, res);
+		return next({ error: 'One field required' });
 
 	newResource.data = stripDataSize(data);
 
@@ -157,7 +160,8 @@ app.post('/resource', middleware.checkToken, function (req, res, next) {
 	newResource.modified = newResource.created;
 
 	ResourcesModel.create(newResource, function (error, r) {
-		if (error) return next(error, res);
+		if (error)
+			return next(error);
 		res.setHeader('Content-Type', 'application/json');
 		logger.debug('new resource created : ' + r);
 		return res.status(201).json(r);
@@ -173,25 +177,25 @@ app.put('/resource/edit/:id', middleware.checkToken, function (req, res, next) {
 		return;
 
 	if (!req.params.id)
-		return next({ error: 'Missing resource id' }, res);
+		return next({ error: 'Missing resource id' });
 
 	var id = req.params.id;
 	if (!req.body['js_resource'])
-		return next({ error: 'Missing data' }, res);
+		return next({ error: 'Missing data' });
 
 	var js_resource = req.body['js_resource'];
 	var resource = JSON.parse(js_resource);
 
 	var data = resource.data;
 	if (!data || data.length <= 0)
-		return next({ error: 'One field required' }, res);
-	
+		return next({ error: 'One field required' });
+
 	data = stripDataSize(data);
 
 	var currentTime = new Date().getTime();
 	ResourcesModel.findOneAndUpdate({ id: id }, { $set: { data: data, modified: currentTime } }, { new: true }, function (error, r) {
 		if (error)
-			return next(error, res);
+			return next(error);
 		res.setHeader('Content-Type', 'application/json');
 
 		if (!r)
@@ -206,7 +210,7 @@ app.delete('/resource/:id', middleware.checkToken, function (req, res, next) {
 		return;
 
 	if (!req.params.id)
-		return next({ error: 'Missing resource id' }, res);
+		return next({ error: 'Missing resource id' });
 
 	var id = req.params.id;
 	var currentTime = new Date().getTime();
@@ -222,13 +226,14 @@ app.delete('/resource/:id', middleware.checkToken, function (req, res, next) {
 		});
 });
 
-function page404(req, res, next) {
+function page404(req, res) {
 	res.setHeader('Content-Type', 'application/json');
-	res.status(404).send({error: 'Unknown page !'});
+	res.status(404).send({ error: 'Unknown page !' });
 }
 app.use(page404);
 
 function errorHandler(error, req, res, next) {
+	logger.error(error);
 	res.setHeader('Content-Type', 'application/json');
 	res.status(400).send(error);
 }
