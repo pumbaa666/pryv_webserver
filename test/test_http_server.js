@@ -30,13 +30,13 @@ function clearDatabase(done) {
 	logger.debug('start clearing');
 	async_series([
 		(done) => {
-			logger.debug('clearing resources');
-			ResourcesModel.collection.drop();
+			logger.debug('clearing users');
+			UsersModel.collection.drop();
 			done();
 		},
 		(done) => {
-			logger.debug('clearing users');
-			UsersModel.collection.drop();
+			logger.debug('clearing resources');
+			ResourcesModel.collection.drop();
 			done();
 		}
 	],
@@ -46,54 +46,55 @@ function clearDatabase(done) {
 	});
 }
 
-describe('Test all webserver endpoint', () => {
+describe('Test all api endpoints', () => {
 	before((done) => {
-		logger.debug('BEFORE');
-		// async_series([
+		async_series([
 			// Clear database
-			// (done) => {
-			// 	clearDatabase(done);
-			// },
+			(done) => {
+				clearDatabase(done);
+			},
 
-			// Create user, login, save token
-			// (done) => {
-				logger.debug('create user, login, etc');
+			// Create user
+			(done) => {
 				let user = { username: referenceUser.username+"_admin", password: referenceUser.password };
 				let body = { js_user: JSON.stringify(user) };
-	
+
 				// Create user
 				chai.request(server)
-					.post('/users')
-					.set('Content-Type', 'application/json')
-					.send(body)
-					.end((err, res) => {
-						res.should.have.status(201);
-						res.body.should.have.property('_id');
+				.post('/users')
+				.set('Content-Type', 'application/json')
+				.send(body)
+				.end((error, res) => {
+					res.should.have.status(201);
+					res.body.should.have.property('_id');
+					done();
+				});
+			},
 
-						// Login using previously created user
-						chai.request(server)
-							.post('/auth/login')
-							.set('Content-Type', 'application/json')
-							.send({ username: referenceUser.username+"_admin", password: referenceUser.password })
-							.then(function (res) {
-								// Save token to authenticate future requests
-								res.should.have.status(200);
-								res.body.should.have.property('token').not.null;
-								token = res.body.token;
-								done();
-							});
-					});
-			// },
-		// ],
+			// Login using previously created user
+			// Save the token in global variable
+			(done) => {
+				chai.request(server)
+				.post('/auth/login')
+				.set('Content-Type', 'application/json')
+				.send({ username: referenceUser.username+"_admin", password: referenceUser.password })
+				.then(function (res) {
+					// Save token to authenticate future requests
+					res.should.have.status(200);
+					res.body.should.have.property('token').not.null;
+					token = res.body.token;
+					done();
+				});
+			}
+		],
 
-		// // Terminate the "before" assignement
-		// () => {
-		// 	done();
-		// });
+		// Terminate the "before" assignement
+		() => {
+			done();
+		});
 	});
 	
 	after((done) => {
-		logger.debug('AFTER');
 		clearDatabase(done);
 	});
 
@@ -106,9 +107,9 @@ describe('Test all webserver endpoint', () => {
 				.post('/users')
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('Missing username/password');
+					res.body.should.have.property('error').eql('Missing username/password');
 					done();
 				});
 		});
@@ -120,9 +121,9 @@ describe('Test all webserver endpoint', () => {
 				.post('/users')
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('Missing username/password');
+					res.body.should.have.property('error').eql('Missing username/password');
 					done();
 				});
 		});
@@ -134,9 +135,9 @@ describe('Test all webserver endpoint', () => {
 				.post('/users')
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('Missing username/password');
+					res.body.should.have.property('error').eql('Missing username/password');
 					done();
 				});
 		});
@@ -149,7 +150,7 @@ describe('Test all webserver endpoint', () => {
 				.post('/users')
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(201);
 					res.body.should.have.property('_id');
 					res.body.should.have.property('username').eql(referenceUser.username);
@@ -165,9 +166,9 @@ describe('Test all webserver endpoint', () => {
 				.post('/auth/login')
 				.set('Content-Type', 'application/json')
 				.send({username: referenceUser.username})
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('Missing username/password');
+					res.body.should.have.property('error').eql('Missing username/password');
 					done();
 				});
 		});
@@ -177,9 +178,9 @@ describe('Test all webserver endpoint', () => {
 				.post('/auth/login')
 				.set('Content-Type', 'application/json')
 				.send({password: referenceUser.password})
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('Missing username/password');
+					res.body.should.have.property('error').eql('Missing username/password');
 					done();
 				});
 		});
@@ -190,7 +191,7 @@ describe('Test all webserver endpoint', () => {
 				.set('Content-Type', 'application/json')
 				.send({username: referenceUser.username})
 				.send({password: referenceUser.password})
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(200);
 					res.body.should.have.property('token').not.null;
 					done();
@@ -202,7 +203,7 @@ describe('Test all webserver endpoint', () => {
 		it('it should not GET resources without beeing authenticated', (done) => {
 			chai.request(server)
 				.get('/resources')
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(401);
 					res.body.should.have.property('error');
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
@@ -214,7 +215,7 @@ describe('Test all webserver endpoint', () => {
 			chai.request(server)
 				.get('/resources')
 				.set('Authorization', token) // set has to be after get : https://github.com/visionmedia/supertest/issues/398
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(200);
 					res.body.should.be.a('array');
 					res.body.length.should.be.eql(0);
@@ -231,7 +232,7 @@ describe('Test all webserver endpoint', () => {
 				.post('/resource')
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(401);
 					res.body.should.have.property('error');
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
@@ -247,9 +248,9 @@ describe('Test all webserver endpoint', () => {
 				.set('Authorization', token)
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('One field required');
+					res.body.should.have.property('error').eql('One field required');
 					done();
 				});
 		});	
@@ -262,7 +263,7 @@ describe('Test all webserver endpoint', () => {
 				.set('Authorization', token)
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(201);
 					res.body.should.be.a('object');
 					res.body.should.have.property('id').eql(referenceResource.id);
@@ -282,7 +283,7 @@ describe('Test all webserver endpoint', () => {
 				.put('/resource/edit/'+referenceResource.id)
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(401);
 					res.body.should.have.property('error');
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
@@ -299,9 +300,9 @@ describe('Test all webserver endpoint', () => {
 				.set('Authorization', token)
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(400);
-					res.body.should.have.property('err').eql('One field required');
+					res.body.should.have.property('error').eql('One field required');
 					done();
 				});
 		});	
@@ -316,7 +317,7 @@ describe('Test all webserver endpoint', () => {
 				.set('Authorization', token)
 				.set('Content-Type', 'application/json')
 				.send(body)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(201);
 					res.body.should.be.a('object');
 					res.body.should.have.property('id').eql(referenceResource.id);
@@ -332,7 +333,7 @@ describe('Test all webserver endpoint', () => {
 		it('it should not delete a resource without being logged', (done) => {
 			chai.request(server)
 				.delete('/resource/'+referenceResource.id)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(401);
 					res.body.should.have.property('error');
 					res.body.error.should.have.property('reason').eql('Auth token is not supplied');
@@ -344,7 +345,7 @@ describe('Test all webserver endpoint', () => {
 			chai.request(server)
 				.delete('/resource/' + referenceResource.id)
 				.set('Authorization', token)
-				.end((err, res) => {
+				.end((error, res) => {
 					res.should.have.status(200);
 					res.body.should.be.a('object');
 					res.body.should.have.property('id').eql(referenceResource.id);

@@ -40,12 +40,6 @@ const uuidv4 = require('uuid/v4'); // Generate UUID. v4 means Random
 var app = express();
 app.use(express.static('scripts')); // Serves static files. Used in ./views/*.ejs files to include ./scripts/*.js
 app.use(express.json()); // Parse json object and put them in ithe request.body : https://stackoverflow.com/questions/10005939/how-do-i-consume-the-json-post-data-in-an-express-application
-//app.use(handleError);
-
-function handleError(err, res) {
-	res.setHeader('Content-Type', 'application/json');
-	res.status(400).json(err);
-}
 
 function isUserAutenthicated(req, res) {
 	if (res && !req.headers.authorization.success) {
@@ -68,15 +62,15 @@ function hash(string) {
  * The payload is JSON.
  * No authentication required.
  */
-app.post('/users', function (req, res) {
+app.post('/users', function (req, res, next) {
 	var user = JSON.parse(req.body.js_user);
 	if (!user || !user.username || !user.password)
-		return handleError({ err: 'Missing username/password' }, res);
+		return next({ error: 'Missing username/password' });
 
 	user.password = hash(user.password);
 
-	UsersModel.create(user, function (err, r) {
-		if (err) return handleError(err, res);
+	UsersModel.create(user, function (error, r) {
+		if (error) return next(error, res);
 		logger.debug('new user created : ' + r);
 		return res.status(201).json(r);
 	});
@@ -86,17 +80,17 @@ app.post('/users', function (req, res) {
  * Log the user if he provides a username and a password in a json object.
  * In case of success : return a 48h-valid token
  */
-app.post('/auth/login', function (req, res) {
+app.post('/auth/login', function (req, res, next) {
 	if (!req.body.username || !req.body.password)
-		return handleError({ err: 'Missing username/password' }, res);
+		return next({ error: 'Missing username/password' }, res);
 
 	var username = req.body.username;
 	var password = hash(req.body.password);
 
-	UsersModel.findOne({ username: username, password: password }, function (err, user) {
-		if (err) return handleError(err, res);
+	UsersModel.findOne({ username: username, password: password }, function (error, user) {
+		if (error) return next(error, res);
 		if (!user)
-			return handleError({ err: 'Bad credentials' }, res);
+			return next({ error: 'Bad credentials' }, res);
 
 		// Matching credentials : return token
 		var token = jwt.sign({ username: username }, config.token.secret, { expiresIn: '48h' });
@@ -112,12 +106,12 @@ app.post('/auth/login', function (req, res) {
  * Show all resources and let user to create new ones.
  * Authentication required.
  */
-app.get('/resources', middleware.checkToken, function (req, res) {
+app.get('/resources', middleware.checkToken, function (req, res, next) {
 	if (!isUserAutenthicated(req, res))
 		return;
 
-	ResourcesModel.find({}, function (err, resources) {
-		if (err) return handleError(err, res);
+	ResourcesModel.find({}, function (error, resources) {
+		if (error) return next(error, res);
 		return res.status(200).json(resources);
 	});
 });
@@ -139,12 +133,12 @@ function stripDataSize(data, maxLength) {
  * Add a new resource.
  * Authentication required.
  */
-app.post('/resource', middleware.checkToken, function (req, res) {
+app.post('/resource', middleware.checkToken, function (req, res, next) {
 	if (!isUserAutenthicated(req, res))
 		return;
 
 	if (!req.body.js_resource)
-		return handleError({ err: 'Missing resource' }, res);
+		return next({ error: 'Missing resource' }, res);
 
 	var resource = JSON.parse(req.body.js_resource);
 	var newResource = new Object();
@@ -155,15 +149,15 @@ app.post('/resource', middleware.checkToken, function (req, res) {
 
 	var data = resource.data;
 	if (!data || data.length <= 0)
-		return handleError({ err: 'One field required' }, res);
+		return next({ error: 'One field required' }, res);
 
 	newResource.data = stripDataSize(data);
 
 	newResource.created = new Date().getTime();
 	newResource.modified = newResource.created;
 
-	ResourcesModel.create(newResource, function (err, r) {
-		if (err) return handleError(err, res);
+	ResourcesModel.create(newResource, function (error, r) {
+		if (error) return next(error, res);
 		res.setHeader('Content-Type', 'application/json');
 		logger.debug('new resource created : ' + r);
 		return res.status(201).json(r);
@@ -174,30 +168,30 @@ app.post('/resource', middleware.checkToken, function (req, res) {
  * Edit data of a resource, providing its id.
  * Authentication required.
  */
-app.put('/resource/edit/:id', middleware.checkToken, function (req, res) {
+app.put('/resource/edit/:id', middleware.checkToken, function (req, res, next) {
 	if (!isUserAutenthicated(req, res))
 		return;
 
 	if (!req.params.id)
-		return handleError({ err: 'Missing resource id' }, res);
+		return next({ error: 'Missing resource id' }, res);
 
 	var id = req.params.id;
 	if (!req.body['js_resource'])
-		return handleError({ err: 'Missing data' }, res);
+		return next({ error: 'Missing data' }, res);
 
 	var js_resource = req.body['js_resource'];
 	var resource = JSON.parse(js_resource);
 
 	var data = resource.data;
 	if (!data || data.length <= 0)
-		return handleError({ err: 'One field required' }, res);
+		return next({ error: 'One field required' }, res);
 	
 	data = stripDataSize(data);
 
 	var currentTime = new Date().getTime();
-	ResourcesModel.findOneAndUpdate({ id: id }, { $set: { data: data, modified: currentTime } }, { new: true }, function (err, r) {
-		if (err)
-			return handleError(err, res);
+	ResourcesModel.findOneAndUpdate({ id: id }, { $set: { data: data, modified: currentTime } }, { new: true }, function (error, r) {
+		if (error)
+			return next(error, res);
 		res.setHeader('Content-Type', 'application/json');
 
 		if (!r)
@@ -207,12 +201,12 @@ app.put('/resource/edit/:id', middleware.checkToken, function (req, res) {
 	});
 });
 
-app.delete('/resource/:id', middleware.checkToken, function (req, res) {
+app.delete('/resource/:id', middleware.checkToken, function (req, res, next) {
 	if (!isUserAutenthicated(req, res))
 		return;
 
 	if (!req.params.id)
-		return handleError({ err: 'Missing resource id' }, res);
+		return next({ error: 'Missing resource id' }, res);
 
 	var id = req.params.id;
 	var currentTime = new Date().getTime();
@@ -222,19 +216,23 @@ app.delete('/resource/:id', middleware.checkToken, function (req, res) {
 		{ id: id, deleted: undefined },
 		{ $set: { data: [], modified: currentTime, deleted: currentTime } },
 		{ new: true },
-		function (err, result) {
+		function (error, result) {
 			res.setHeader('Content-Type', 'application/json');
 			return res.status(200).json(result);
 		});
 });
 
-/*
- * Page 404
- */
-app.use(function (req, res, next) {
+function page404(req, res, next) {
 	res.setHeader('Content-Type', 'application/json');
-	res.status(404).send({err: 'Unknown page !'});
-});
+	res.status(404).send({error: 'Unknown page !'});
+}
+app.use(page404);
+
+function errorHandler(error, req, res, next) {
+	res.setHeader('Content-Type', 'application/json');
+	res.status(400).send(error);
+}
+app.use(errorHandler);
 
 app.listen(config.app.port);
 logger.info('Listening on port ' + config.app.port);
